@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+require("dotenv").config();
 //attrubutes for the ball
 var circle = [50, 200];
 var vel = [5, 5];
@@ -9,7 +10,7 @@ var players = { x: { y: null, id: null }, y: { y: null, id: null } };
 var socket = require("socket.io");
 app.use(express.static("./Client"));
 
-const server = app.listen(9000, () => {
+const server = app.listen(process.env.PORT || 9000, () => {
   console.log("server running");
 });
 const io = socket(server);
