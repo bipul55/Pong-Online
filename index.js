@@ -109,4 +109,4 @@ setInterval(() => {
     circle[0] = circle[0] + vel[0];
     circle[1] = circle[1] + vel[1];
   }
-}, 30);
+}, 300);
