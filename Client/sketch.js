@@ -12,7 +12,7 @@ function setup() {
   // initiallly not ready to play
   ready = false;
   // connect to server
-  socket = io.connect("http://localhost:9000");
+  socket = io.connect("https://bipul-pong-online.herokuapp.com/");
   // if connected find id and assine it
   socket.on("connect", () => {
     id = socket.id;
