@@ -1,9 +1,16 @@
 const express = require("express");
+const math = require("math");
 const app = express();
 require("dotenv").config();
 //attrubutes for the ball
-var circle = [50, 200];
-var vel = [5, 5];
+var ball = {
+  x: 50,
+  y: 200,
+  vel: {
+    x: 5,
+    y: 5,
+  },
+};
 var score = [0, 0];
 //attributes for the players
 var players = { x: { y: null, id: null }, y: { y: null, id: null } };
@@ -45,10 +52,10 @@ io.on("connection", (socket) => {
       socket.broadcast.emit("score", score);
       socket.emit("score", score);
 
-      socket.broadcast.emit("GameStart", true);
-      socket.emit("GameStart", true);
+      socket.broadcast.emit("GameStart", ball);
+      socket.emit("GameStart", ball);
     }
-    // send ready signat to the user client sending them the id and their position
+    // send ready signal to the user client sending them the id and their position
     socket.emit("ready", data);
     // update the postition of both the player and broadcast them to both the players
     socket.on("Playerupdated", (data) => {
@@ -62,30 +69,42 @@ io.on("connection", (socket) => {
     });
     // if the ball hit wall then bounce
     // postion of the ball is calculated here
-    socket.on("hitwall", (val) => {
-      if (val[0] > 0) {
-        vel[0] = 5;
-      } else if (val[0] < 0) {
-        vel[0] = -5;
-      }
-      if (val[1] > 0) {
-        vel[1] = 5;
-      } else if (val[1] < 0) {
-        vel[1] = -5;
-      }
+
+    socket.on("hitwall", (b) => {
+      ball.x = b.x;
+      ball.y = b.y;
+      ball.vel = b.vel;
+      socket.emit("update", ball);
+      socket.broadcast.emit("update", ball);
     });
     // update the score
     socket.on("score", (val) => {
-      circle[0] = 500;
+      // circle[0] = 500;
+      var v = [-5, 5];
+      ball.x = 500;
+      ball.y = 200;
+      ball.vel.x = v[math.floor(math.random() * v.length)];
+      ball.vel.y = v[math.floor(math.random() * v.length)];
       if (val.pos == 1) {
         score[0] = score[0] + 1;
       } else {
         score[1] = score[1] + 1;
       }
+      // broadcast the new scores
       socket.broadcast.emit("score", score);
       socket.emit("score", score);
+      // broadcast the new postiton of the ball
+      socket.broadcast.emit("update", ball);
+      socket.emit("update", ball);
     });
   }
+  socket.on("update_ball", (b) => {
+    ball.x = b.x;
+    ball.y = b.y;
+    ball.vel = b.vel;
+    socket.emit("update", ball);
+  });
+
   //if the player is disconnected remove it
   socket.on("disconnect", (reason) => {
     console.log("disconnected", socket.id);
@@ -101,12 +120,3 @@ io.on("connection", (socket) => {
     score = [0, 0];
   });
 });
-// broadcast the postion of ball every 30 sec
-
-setInterval(() => {
-  if (players.x.id && players.y.id) {
-    io.sockets.emit("update", circle);
-    circle[0] = circle[0] + vel[0];
-    circle[1] = circle[1] + vel[1];
-  }
-}, 300);
