@@ -98,11 +98,9 @@ io.on("connection", (socket) => {
       socket.emit("update", ball);
     });
   }
-  socket.on("update_ball", (b) => {
-    ball.x = b.x;
-    ball.y = b.y;
-    ball.vel = b.vel;
-    socket.emit("update", ball);
+
+  socket.on("ping", (date) => {
+    socket.emit("pong", date);
   });
 
   //if the player is disconnected remove it

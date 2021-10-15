@@ -6,7 +6,7 @@ var ready;
 var id; // id assigned by the socket.io when connected to the server
 var score = [0, 0]; //keep track of the scores
 var textMsg = "Waiting for players....";
-
+var ping;
 // setup
 function setup() {
   // new ball object
@@ -22,6 +22,10 @@ function setup() {
   // if connected find id and assine it
   socket.on("connect", () => {
     id = socket.id;
+  });
+  // finding the ping
+  socket.on("pong", (date) => {
+    ping = Date.now() - date;
   });
 
   // error handelling.
@@ -105,4 +109,17 @@ function draw() {
     fill(255);
     text(textMsg, 500, 200);
   }
+  textSize(12);
+  text("ping: " + ping + "ms", 900, 10);
 }
+// setInterval(() => {
+//   if (players.x.id && players.y.id) {
+//     io.sockets.emit("update", circle);
+//     circle[0] = circle[0] + vel[0];
+//     circle[1] = circle[1] + vel[1];
+//   }
+// }, 300);
+setInterval(() => {
+  var start_time = Date.now();
+  socket.emit("ping", start_time);
+}, 300);
