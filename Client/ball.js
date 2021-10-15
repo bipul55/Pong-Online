@@ -20,11 +20,11 @@ function Ball(n, width, height) {
     this.y = this.vel.y + this.y;
     if (this.y > 350) {
       this.vel.y = -5;
-      socket.emit("hitwall", this);
+      // socket.emit("hitwall", this);
     } else if (this.y < 20) {
       this.vel.y = 5;
 
-      socket.emit("hitwall", this);
+      // socket.emit("hitwall", this);
     }
     if (this.x < 50) {
       if (player.pos == 1 && this.y > player.y && this.y < player.y + 100) {
